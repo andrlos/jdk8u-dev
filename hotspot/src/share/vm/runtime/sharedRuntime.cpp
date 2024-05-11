@@ -782,7 +782,10 @@ address SharedRuntime::continuation_for_implicit_exception(JavaThread* thread,
 #else
     switch (exception_kind) {
       case IMPLICIT_NULL:           return Interpreter::throw_NullPointerException_entry();
-      case IMPLICIT_DIVIDE_BY_ZERO: return Interpreter::throw_ArithmeticException_entry();
+      case IMPLICIT_DIVIDE_BY_ZERO: {
+        assert(false, "zero division");
+	return Interpreter::throw_ArithmeticException_entry();
+      }
       case STACK_OVERFLOW:          return Interpreter::throw_StackOverflowError_entry();
       default:                      ShouldNotReachHere();
     }
