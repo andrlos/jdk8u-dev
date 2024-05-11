@@ -96,6 +96,11 @@ static void guarded_memory_test_check(void* p, size_t sz, void* tag) {
   assert(guarded.verify_guards(), "Guard broken");
 }
 
+#if __GNUC__ > 4 || ( __GNUC__ == 4 && __GNUC_MINOR__ >= 6 )
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstringop-overflow"
+#endif
+
 void GuardedMemory::test_guarded_memory() {
   // Test the basic characteristics...
   size_t total_sz = GuardedMemory::get_total_size(1);
@@ -158,6 +163,10 @@ void GuardedMemory::test_guarded_memory() {
   void* no_data_copy = GuardedMemory::wrap_copy(no_data, 0);
   assert(GuardedMemory::free_copy(no_data_copy), "Expected valid guards even for no data copy");
 }
+
+#if __GNUC__ > 4 || ( __GNUC__ == 4 && __GNUC_MINOR__ >= 6 )
+#pragma GCC diagnostic pop
+#endif
 
 #endif // !PRODUCT
 

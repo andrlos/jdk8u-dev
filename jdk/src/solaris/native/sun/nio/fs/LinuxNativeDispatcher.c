@@ -34,6 +34,7 @@
 #include <dlfcn.h>
 #include <errno.h>
 #include <mntent.h>
+#include <stdlib.h>
 
 #include "sun_nio_fs_LinuxNativeDispatcher.h"
 

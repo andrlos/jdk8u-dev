@@ -2553,12 +2553,14 @@ TypeOopPtr::TypeOopPtr(TYPES t, PTR ptr, ciKlass* k, bool xk, ciObject* o, int o
                    _offset >= InstanceMirrorKlass::offset_of_static_fields()) {
           // Static fields
           assert(o != NULL, "must be constant");
-          ciInstanceKlass* k = o->as_instance()->java_lang_Class_klass()->as_instance_klass();
-          ciField* field = k->get_field_by_offset(_offset, true);
-          assert(field != NULL, "missing field");
-          BasicType basic_elem_type = field->layout_type();
-          _is_ptr_to_narrowoop = UseCompressedOops && (basic_elem_type == T_OBJECT ||
-                                                       basic_elem_type == T_ARRAY);
+          if (o != NULL) {
+            ciInstanceKlass* k = o->as_instance()->java_lang_Class_klass()->as_instance_klass();
+            ciField* field = k->get_field_by_offset(_offset, true);
+            assert(field != NULL, "missing field");
+            BasicType basic_elem_type = field->layout_type();
+            _is_ptr_to_narrowoop = UseCompressedOops && (basic_elem_type == T_OBJECT ||
+                                                        basic_elem_type == T_ARRAY);
+          } /* TODO - fix this */
         } else {
           // Instance fields which contains a compressed oop references.
           field = ik->get_field_by_offset(_offset, false);
@@ -3786,7 +3788,8 @@ jint TypeAryPtr::max_array_length(BasicType etype) {
     } else if (etype == T_ILLEGAL) { // bottom[]
       etype = T_BYTE; // will produce conservatively high value
     } else {
-      fatal(err_msg("not an element type: %s", type2name(etype)));
+      const char* name = type2name(etype);
+      fatal(err_msg("not an element type: %s", name ? name : "*UNKNOWN*"));
     }
   }
   return arrayOopDesc::max_array_length(etype);
